@@ -4,18 +4,41 @@
     <meta charset="UTF-8">
     <title>NexSwap</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 </head>
 <body>
+    <div class="top-bar">
+        <button id="faucetBtn">💧 Faucet</button>
+        <button id="connectWallet">Connect Wallet</button>
+        <span id="walletAddress"></span>
+    </div>
+
     <div class="window">
         <div class="title-bar">
             <span>NexSwap</span>
         </div>
         <div class="content">
-            <button id="connectWallet">Connect Wallet</button>
-            <button id="swap">Swap</button>
-            <button id="addLiquidity">Add Liquidity</button>
+            <div class="swap-section">
+                <label>From:</label>
+                <select id="fromToken">
+                    <option value="NSW">NSW</option>
+                    <option value="NST">NST</option>
+                </select>
+                <input type="number" id="fromAmount" placeholder="Amount" />
+
+                <label>To:</label>
+                <select id="toToken">
+                    <option value="NST">NST</option>
+                    <option value="NSW">NSW</option>
+                </select>
+
+                <button id="actionBtn">Approve NSW</button>
+                <div id="status"></div>
+                <p class="fee-info">Protocol fee: 0.0001 NEX (auto included)</p>
+            </div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
