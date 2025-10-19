@@ -14,28 +14,26 @@
     </div>
 
     <div class="window">
-        <div class="title-bar">
-            <span>NexSwap</span>
-        </div>
+        <div class="title-bar">NexSwap</div>
         <div class="content">
-            <div class="swap-section">
-                <label>From:</label>
-                <select id="fromToken">
-                    <option value="NSW">NSW</option>
-                    <option value="NST">NST</option>
-                </select>
-                <input type="number" id="fromAmount" placeholder="Amount" />
+            <label>From:</label>
+            <select id="fromToken">
+                <option value="NSW">NSW</option>
+                <option value="NST">NST</option>
+            </select>
 
-                <label>To:</label>
-                <select id="toToken">
-                    <option value="NST">NST</option>
-                    <option value="NSW">NSW</option>
-                </select>
+            <input type="number" id="fromAmount" placeholder="Amount" />
 
-                <button id="actionBtn">Approve NSW</button>
-                <div id="status"></div>
-                <p class="fee-info">Protocol fee: 0.0001 NEX (auto included)</p>
-            </div>
+            <label>To:</label>
+            <select id="toToken">
+                <option value="NST">NST</option>
+                <option value="NSW">NSW</option>
+            </select>
+
+            <button id="actionBtn">Approve NSW</button>
+
+            <p class="fee-info">Protocol fee: 0.0001 NEX (auto included)</p>
+            <p id="status"></p>
         </div>
     </div>
 
