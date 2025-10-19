@@ -1,94 +1,98 @@
-// --- Config ---
-const CONTRACTS = {
-  Faucet: "0xdf84f4acde69ea69da7196b982dc32b23614e970",
-  NexSwap: "0xEA1f9cAEDCeC543fe7F5b01E234dC8cA3C479857",
-  NSW: "0x4786612305a3fBF0ceF81244B3992852EE92b1F3",
-  NST: "0xbe566596b84D96E6bBCD3201CADf46910AEE4B56"
-};
+const NSW = "0x4786612305a3fBF0ceF81244B3992852EE92b1F3";
+const NST = "0xbe566596b84D96E6bBCD3201CADf46910AEE4B56";
+const Faucet = "0xdf84f4acde69ea69da7196b982dc32b23614e970";
+const NexSwap = "0xEA1f9cAEDCeC543fe7F5b01E234dC8cA3C479857";
+const FEE = ethers.utils.parseEther("0.0001");
 
-const NEXUS_RPC = "https://rpc.nexusnetwork.io";
-const NEXUS_CHAIN_ID = "0x19b"; // 411
-const FIXED_NEX_FEE = ethers.utils.parseEther("0.0001");
+let provider, signer, account;
+let tokenA, tokenB, nexSwapContract, faucetContract;
 
-const ERC20_ABI = [
-  "function approve(address spender, uint256 amount) external returns (bool)",
-  "function allowance(address owner, address spender) external view returns (uint256)"
-];
-const FAUCET_ABI = ["function claim() external"];
-const NEXSWAP_ABI = [
-  "function swapAforB(uint256 amountAIn, uint256 minBOut) external payable returns (uint256)",
-  "function swapBforA(uint256 amountBIn, uint256 minAOut) external payable returns (uint256)"
+const erc20ABI = [
+  "function approve(address spender, uint256 value) public returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function decimals() view returns (uint8)"
 ];
 
-let provider, signer, user;
+const faucetABI = ["function claim() external"];
+const nexSwapABI = [
+  "function swapAforB(uint256 amountAIn, uint256 minBOut) payable returns (uint256)",
+  "function swapBforA(uint256 amountBIn, uint256 minAOut) payable returns (uint256)"
+];
 
-// --- Helpers ---
-function log(msg) {
-  document.getElementById("status").innerText = msg;
-}
+const connectBtn = document.getElementById("connectWallet");
+const faucetBtn = document.getElementById("faucetBtn");
+const actionBtn = document.getElementById("actionButton");
 
-// --- Connect Wallet ---
-document.getElementById("connectBtn").addEventListener("click", async () => {
-  if (!window.ethereum) return log("MetaMask not found!");
-
+connectBtn.onclick = async () => {
+  if (typeof window.ethereum === "undefined") return alert("Install MetaMask!");
   provider = new ethers.providers.Web3Provider(window.ethereum);
   await provider.send("eth_requestAccounts", []);
   signer = provider.getSigner();
-  user = await signer.getAddress();
-  log("Connected: " + user.slice(0, 6) + "..." + user.slice(-4));
+  account = await signer.getAddress();
 
-  document.getElementById("faucetBtn").disabled = false;
-  document.getElementById("swapBtn").disabled = false;
-});
+  connectBtn.textContent = `${account.slice(0, 6)}...${account.slice(-4)}`;
 
-// --- Faucet Claim ---
-document.getElementById("faucetBtn").addEventListener("click", async () => {
-  if (!signer) return log("Connect wallet first!");
-  try {
-    const faucet = new ethers.Contract(CONTRACTS.Faucet, FAUCET_ABI, signer);
-    log("Claiming...");
-    const tx = await faucet.claim();
-    await tx.wait();
-    log("Tokens claimed!");
-  } catch (e) {
-    log("Faucet error: " + e.message);
+  const network = await provider.getNetwork();
+  if (network.chainId !== 245022926) {
+    alert("Please switch to Nexus Network in MetaMask!");
   }
-});
 
-// --- Swap Logic ---
-document.getElementById("swapBtn").addEventListener("click", async () => {
-  if (!signer) return log("Connect wallet first!");
+  tokenA = new ethers.Contract(NSW, erc20ABI, signer);
+  tokenB = new ethers.Contract(NST, erc20ABI, signer);
+  nexSwapContract = new ethers.Contract(NexSwap, nexSwapABI, signer);
+  faucetContract = new ethers.Contract(Faucet, faucetABI, signer);
 
-  const fromToken = document.getElementById("fromToken").value;
-  const toToken = document.getElementById("toToken").value;
-  const amount = document.getElementById("fromAmount").value;
+  checkAllowance();
+};
 
-  if (!amount) return log("Enter amount!");
-  const amountWei = ethers.utils.parseUnits(amount, 18);
-  const token = new ethers.Contract(CONTRACTS[fromToken], ERC20_ABI, signer);
-  const allowance = await token.allowance(user, CONTRACTS.NexSwap);
+async function checkAllowance() {
+  const fromToken = document.getElementById("fromToken").value === "NSW" ? tokenA : tokenB;
+  const allowance = await fromToken.allowance(account, NexSwap);
+  const amountIn = document.getElementById("fromAmount").value || "0";
+  const decimals = await fromToken.decimals();
+  const required = ethers.utils.parseUnits(amountIn.toString(), decimals);
+  actionBtn.textContent = allowance.gte(required) ? "Swap" : `Approve ${document.getElementById("fromToken").value}`;
+}
 
-  const btn = document.getElementById("swapBtn");
+document.getElementById("fromAmount").addEventListener("input", checkAllowance);
+document.getElementById("fromToken").addEventListener("change", checkAllowance);
 
-  if (allowance.lt(amountWei)) {
-    log("Approving " + fromToken + "...");
-    btn.textContent = "Approving...";
-    const tx = await token.approve(CONTRACTS.NexSwap, amountWei);
+actionBtn.onclick = async () => {
+  const fromTokenSel = document.getElementById("fromToken").value;
+  const toTokenSel = document.getElementById("toToken").value;
+  const amountIn = document.getElementById("fromAmount").value;
+
+  if (!amountIn || amountIn <= 0) return alert("Enter amount!");
+
+  const fromToken = fromTokenSel === "NSW" ? tokenA : tokenB;
+  const decimals = await fromToken.decimals();
+  const parsedAmount = ethers.utils.parseUnits(amountIn.toString(), decimals);
+
+  const allowance = await fromToken.allowance(account, NexSwap);
+  if (allowance.lt(parsedAmount)) {
+    const tx = await fromToken.approve(NexSwap, parsedAmount);
     await tx.wait();
-    log(fromToken + " approved!");
-    btn.textContent = "Swap";
+    alert("Approve successful!");
+    return checkAllowance();
+  }
+
+  if (fromTokenSel === "NSW") {
+    const tx = await nexSwapContract.swapAforB(parsedAmount, 0, { value: FEE });
+    await tx.wait();
+    alert("Swap NSW → NST completed!");
   } else {
-    log("Swapping...");
-    btn.textContent = "Swapping...";
-    const nexSwap = new ethers.Contract(CONTRACTS.NexSwap, NEXSWAP_ABI, signer);
-    let tx;
-    if (fromToken === "NSW" && toToken === "NST")
-      tx = await nexSwap.swapAforB(amountWei, 0, { value: FIXED_NEX_FEE });
-    else if (fromToken === "NST" && toToken === "NSW")
-      tx = await nexSwap.swapBforA(amountWei, 0, { value: FIXED_NEX_FEE });
-    else return log("Invalid direction!");
+    const tx = await nexSwapContract.swapBforA(parsedAmount, 0, { value: FEE });
     await tx.wait();
-    log("Swap done!");
-    btn.textContent = "Approve";
+    alert("Swap NST → NSW completed!");
   }
-});
+};
+
+faucetBtn.onclick = async () => {
+  try {
+    const tx = await faucetContract.claim();
+    await tx.wait();
+    alert("Tokens claimed from Faucet!");
+  } catch (e) {
+    alert("Faucet claim failed!");
+  }
+};
