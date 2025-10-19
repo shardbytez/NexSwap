@@ -1,42 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>NexSwap</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <meta charset="UTF-8">
+  <title>NexSwap</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 </head>
 <body>
-    <div class="top-bar">
-        <button id="faucetBtn">💧 Faucet</button>
-        <button id="connectWallet">Connect Wallet</button>
-        <span id="walletAddress"></span>
+  <div class="window">
+    <div class="title-bar">💾 NexSwap 95</div>
+    <div class="content">
+      <button id="connectBtn">🖥️ Connect Wallet</button>
+      <button id="faucetBtn" disabled>💧 Faucet</button>
+
+      <select id="fromToken">
+        <option value="NSW">NSW</option>
+        <option value="NST">NST</option>
+      </select>
+      <input id="fromAmount" placeholder="Amount" />
+
+      <select id="toToken">
+        <option value="NST">NST</option>
+        <option value="NSW">NSW</option>
+      </select>
+
+      <button id="swapBtn" disabled>Approve</button>
+      <div id="status"></div>
     </div>
+  </div>
 
-    <div class="window">
-        <div class="title-bar">NexSwap</div>
-        <div class="content">
-            <label>From:</label>
-            <select id="fromToken">
-                <option value="NSW">NSW</option>
-                <option value="NST">NST</option>
-            </select>
-
-            <input type="number" id="fromAmount" placeholder="Amount" />
-
-            <label>To:</label>
-            <select id="toToken">
-                <option value="NST">NST</option>
-                <option value="NSW">NSW</option>
-            </select>
-
-            <button id="actionBtn">Approve NSW</button>
-
-            <p class="fee-info">Protocol fee: 0.0001 NEX (auto included)</p>
-            <p id="status"></p>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
