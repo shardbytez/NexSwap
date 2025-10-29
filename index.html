@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexSwap - Decentralized Exchange</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="header">
+    <button id="faucetBtn">💧 Faucet</button>
+    <div class="spacer"></div>
+    <button id="connectWallet">Connect Wallet</button>
+  </div>
+
+  <div class="window">
+    <div class="title-bar">NexSwap</div>
+    <div class="content">
+      <div class="swap-section">
+        <label>From:</label>
+        <input id="fromAmount" type="number" placeholder="0.0">
+        <select id="fromToken">
+          <option value="NSW">NSW</option>
+          <option value="NST">NST</option>
+        </select>
+
+        <div class="swap-arrow">⬇️</div>
+
+        <label>To:</label>
+        <input id="toAmount" type="number" placeholder="0.0" disabled>
+        <select id="toToken">
+          <option value="NST">NST</option>
+          <option value="NSW">NSW</option>
+        </select>
+      </div>
+
+      <div class="fee-info">Protocol Fee: 0.0001 NEX</div>
+      <div id="statusMessage" class="status-message"></div>
+      <button id="actionButton">Connect Wallet</button>
+    </div>
+  </div>
+
+  <div id="notification-container"></div>
+
+  <script src="./ethers.umd.min.js"></script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
