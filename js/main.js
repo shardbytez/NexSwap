@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', main);
 
 async function main() {
     initializeUiElements();
-    appState.fee = ethers.utils.parseEther("0.0001");
+    appState.fee = ethers.utils.parseEther("0.01");
 
     const lazyUpdate = debounce(() => {
         if (appState.account) updateActionButton();
