@@ -8,33 +8,62 @@
 </head>
 <body>
   <div class="header">
-    <button id="faucetBtn">💧 Faucet</button>
-    <div class="spacer"></div>
-    <button id="connectWallet">Connect Wallet</button>
+    <div class="logo">NexSwap</div>
+    <div class="header-controls">
+      <button id="faucetBtn">💧 Faucet</button>
+      <button id="connectWallet">Connect Wallet</button>
+    </div>
   </div>
 
   <div class="window">
-    <div class="title-bar">NexSwap</div>
+    <div class="title-bar">
+      <div class="tabs">
+        <button id="tab-swap" class="tab-btn active">Swap</button>
+        <button id="tab-pool" class="tab-btn">AddLiquidity</button>
+      </div>
+    </div>
     <div class="content">
-      <div class="swap-section">
-        <label>From:</label>
-        <input id="fromAmount" type="number" placeholder="0.0">
-        <select id="fromToken">
-          <option value="NSW">NSW</option>
-          <option value="NST">NST</option>
-        </select>
+      <div id="swap-container">
+        <div class="swap-section">
+          <label>From:</label>
+          <input id="fromAmount" type="number" placeholder="0.0">
+          <select id="fromToken">
+            <option value="NSW">NSW</option>
+            <option value="NST">NST</option>
+          </select>
 
-        <div class="swap-arrow">⬇️</div>
+          <div class="swap-arrow">⬇️</div>
 
-        <label>To:</label>
-        <input id="toAmount" type="number" placeholder="0.0" disabled>
-        <select id="toToken">
-          <option value="NST">NST</option>
-          <option value="NSW">NSW</option>
-        </select>
+          <label>To:</label>
+          <input id="toAmount" type="number" placeholder="0.0" disabled>
+          <select id="toToken">
+            <option value="NST">NST</option>
+            <option value="NSW">NSW</option>
+          </select>
+        </div>
       </div>
 
-      <div class="fee-info">Protocol Fee: 0.01 NEX</div>
+      <div id="pool-container" style="display: none;">
+        <div class="swap-section">
+          <label>Deposit NSW:</label>
+          <input id="poolAmountA" type="number" placeholder="0.0">
+          <label>Deposit NST:</label>
+          <input id="poolAmountB" type="number" placeholder="0.0">
+        </div>
+        
+        <div class="pool-stats">
+          <div>Your LP: <span id="lpBalance">0.0</span></div>
+          <div>Rewards: <span id="rewardBalance">0.0</span> NEX</div>
+        </div>
+
+        <div class="pool-actions">
+          <button id="addLiquidityBtn">Add Liquidity</button>
+          <button id="removeLiquidityBtn">Remove</button>
+          <button id="claimRewardsBtn">Claim Rewards</button>
+        </div>
+      </div>
+
+      <div class="fee-info">Protocol Swap Fee: 0.01 NEX.  50% for LP / 50% for Stakers(soon)</div>
       <div id="statusMessage" class="status-message"></div>
       <button id="actionButton">Connect Wallet</button>
     </div>

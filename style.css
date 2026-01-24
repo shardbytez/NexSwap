@@ -19,13 +19,16 @@ body {
   z-index: 10;
 }
 
-.header button {
-  padding: 8px 14px;
-  font-size: 14px;
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+  color: #000080;
+  text-shadow: 2px 2px 0 #fff;
 }
 
-.spacer {
-  display: none;
+.header-controls {
+  display: flex;
+  gap: 10px;
 }
 
 .window {
@@ -39,12 +42,32 @@ body {
   transform: translate(-50%, -50%);
 }
 
+/* Title Bar & Tabs */
 .title-bar {
   background: #000080;
+  padding: 2px;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.tab-btn {
+  flex: 1;
+  background: #000080;
   color: white;
+  border: none;
   padding: 6px;
   font-weight: bold;
-  text-align: center;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  background: #c0c0c0;
+  color: #000;
+  box-shadow: inset 2px 2px 0 #808080;
 }
 
 .content {
@@ -69,10 +92,6 @@ input, select, button {
   font-weight: bold;
 }
 
-button {
-  cursor: pointer;
-}
-
 button:active {
   border-top-color: #808080;
   border-left-color: #808080;
@@ -80,23 +99,30 @@ button:active {
   border-right-color: #fff;
 }
 
-.swap-arrow {
-  text-align: center;
-  font-size: 20px;
-}
-
-.fee-info {
-  text-align: center;
+/* Liquidity Specific */
+.pool-stats {
+  background: #c0c0c0;
+  border: 2px inset #fff;
+  padding: 8px;
   font-size: 12px;
-  color: #333;
+  margin: 5px 0;
 }
 
-.status-message {
-  text-align: center;
-  min-height: 1.2em;
-  font-weight: bold;
+.pool-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
 }
 
+#claimRewardsBtn {
+  grid-column: span 2;
+}
+
+.swap-arrow { text-align: center; font-size: 20px; }
+.fee-info { text-align: center; font-size: 12px; color: #333; }
+.status-message { text-align: center; min-height: 1.2em; font-weight: bold; }
+
+/* Уведомления (ВОЗВРАТ К ОРИГИНАЛУ) */
 #notification-container {
   position: fixed;
   top: 65px;
@@ -126,13 +152,8 @@ button:active {
 .notification.error { color: #8B0000; }
 .notification.warning { color: #8B0000; }
 
-.notification p {
-    margin: 0;
-}
-
-.notification p:only-child {
-    text-align: center;
-}
+.notification p { margin: 0; }
+.notification p:only-child { text-align: center; }
 
 .notification-tx {
   font-size: 12px;
@@ -140,21 +161,10 @@ button:active {
   word-break: break-all;
 }
 
-.notification-tx a {
-  color: #000080;
-  text-decoration: none;
-}
-.notification-tx a:hover {
-  text-decoration: underline;
-}
+.notification-tx a { color: #000080; text-decoration: none; }
+.notification-tx a:hover { text-decoration: underline; }
 
 @keyframes slide-in {
-  from {
-    transform: translateX(120%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }

@@ -15,6 +15,8 @@ export const CONFIG = {
             "function approve(address spender, uint256 value) returns (bool)",
             "function allowance(address owner, address spender) view returns (uint256)",
             "function balanceOf(address account) view returns (uint256)",
+            "function getPendingRewards(address user) view returns (uint256)",
+            "function removeLiquidity(uint256 lpAmount) external",
             "function decimals() view returns (uint8)",
             "function symbol() view returns (string)"
         ],
@@ -25,6 +27,7 @@ export const CONFIG = {
             "function addLiquidity(uint256 amountA, uint256 amountB) external",
             "function removeLiquidity(uint256 lpAmount) external",
             "function claimRewards() external",
+            "function balanceOf(address account) view returns (uint256)",
             "function getPendingRewards(address user) view returns (uint256)",
             "function getReserves() view returns (uint256, uint256)"
         ],

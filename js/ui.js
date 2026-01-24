@@ -10,6 +10,19 @@ export function initializeUiElements() {
     ui.toTokenSelect = document.getElementById("toToken");
     ui.toAmountInput = document.getElementById("toAmount");
     ui.statusMessage = document.getElementById("statusMessage");
+
+    ui.tabSwap = document.getElementById("tab-swap");
+    ui.tabPool = document.getElementById("tab-pool");
+    ui.swapContainer = document.getElementById("swap-container");
+    ui.poolContainer = document.getElementById("pool-container");
+    
+    ui.poolAmountA = document.getElementById("poolAmountA");
+    ui.poolAmountB = document.getElementById("poolAmountB");
+    ui.lpBalance = document.getElementById("lpBalance");
+    ui.rewardBalance = document.getElementById("rewardBalance");
+    ui.addLiquidityBtn = document.getElementById("addLiquidityBtn");
+    ui.removeLiquidityBtn = document.getElementById("removeLiquidityBtn");
+    ui.claimRewardsBtn = document.getElementById("claimRewardsBtn");
 }
 
 export function setButtonState(button, text, disabled) {

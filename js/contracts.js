@@ -100,3 +100,94 @@ export async function claimFromFaucet() {
         setButtonState(ui.faucetBtn, "Faucet", false);
     }
 }
+
+export async function handleAddLiquidity() {
+    if (appState.isTxPending || !appState.signer) return;
+
+    const amountA = ui.poolAmountA.value;
+    const amountB = ui.poolAmountB.value;
+
+    if (!amountA || !amountB || parseFloat(amountA) <= 0 || parseFloat(amountB) <= 0) {
+        return showNotification("Enter valid amounts for both tokens.", 'warning');
+    }
+
+    appState.isTxPending = true;
+    setButtonState(ui.addLiquidityBtn, "Processing...", true);
+
+    try {
+        const parsedA = ethers.utils.parseUnits(amountA.toString(), 18);
+        const parsedB = ethers.utils.parseUnits(amountB.toString(), 18);
+
+        const allowanceA = await appState.contracts.nsw.allowance(appState.account, CONFIG.CONTRACTS.NexSwap);
+        const allowanceB = await appState.contracts.nst.allowance(appState.account, CONFIG.CONTRACTS.NexSwap);
+
+        if (allowanceA.lt(parsedA)) {
+            setButtonState(ui.addLiquidityBtn, "Approve NSW...", true);
+            const tx = await appState.contracts.nsw.approve(CONFIG.CONTRACTS.NexSwap, parsedA);
+            await waitForTransaction(appState.provider, tx.hash);
+        }
+
+        if (allowanceB.lt(parsedB)) {
+            setButtonState(ui.addLiquidityBtn, "Approve NST...", true);
+            const tx = await appState.contracts.nst.approve(CONFIG.CONTRACTS.NexSwap, parsedB);
+            await waitForTransaction(appState.provider, tx.hash);
+        }
+
+        setButtonState(ui.addLiquidityBtn, "Adding Liquidity...", true);
+        const tx = await appState.contracts.nexSwap.addLiquidity(parsedA, parsedB);
+        const receipt = await waitForTransaction(appState.provider, tx.hash);
+
+        if (receipt.status === 1) {
+            showNotification("✅ Liquidity Added!", 'success', receipt.transactionHash);
+            ui.poolAmountA.value = "";
+            ui.poolAmountB.value = "";
+        }
+    } catch (err) {
+        handleError(err);
+    } finally {
+        appState.isTxPending = false;
+        setButtonState(ui.addLiquidityBtn, "Add Liquidity", false);
+        updateUiState();
+    }
+}
+
+export async function handleRemoveLiquidity() {
+    if (appState.isTxPending || !appState.signer) return;
+
+    const lpBalance = await appState.contracts.nexSwap.balanceOf(appState.account);
+    if (lpBalance.eq(0)) return showNotification("No LP tokens to remove.", 'warning');
+
+    appState.isTxPending = true;
+    setButtonState(ui.removeLiquidityBtn, "Removing...", true);
+
+    try {
+        const tx = await appState.contracts.nexSwap.removeLiquidity(lpBalance);
+        const receipt = await waitForTransaction(appState.provider, tx.hash);
+        if (receipt.status === 1) showNotification("✅ Liquidity Removed!", 'success', receipt.transactionHash);
+    } catch (err) {
+        handleError(err);
+    } finally {
+        appState.isTxPending = false;
+        setButtonState(ui.removeLiquidityBtn, "Remove", false);
+        updateUiState();
+    }
+}
+
+export async function handleClaimRewards() {
+    if (appState.isTxPending || !appState.signer) return;
+
+    appState.isTxPending = true;
+    setButtonState(ui.claimRewardsBtn, "Claiming...", true);
+
+    try {
+        const tx = await appState.contracts.nexSwap.claimRewards();
+        const receipt = await waitForTransaction(appState.provider, tx.hash);
+        if (receipt.status === 1) showNotification("✅ NEX Rewards Claimed!", 'success', receipt.transactionHash);
+    } catch (err) {
+        handleError(err);
+    } finally {
+        appState.isTxPending = false;
+        setButtonState(ui.claimRewardsBtn, "Claim Rewards", false);
+        updateUiState();
+    }
+}
